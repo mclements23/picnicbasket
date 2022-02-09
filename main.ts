@@ -1,3 +1,48 @@
+// This function lets the user win the game when the score gets to 5
+// 
+// Martin C
+function checkScore () {
+    if (info.score() == 5) {
+        game.over(true)
+    }
+}
+// This function is what evaluates the guess the user takes. If the guess is right, the score changes by 1, if they guess wrong the misses change by 1 as well. This functio9n also includes the call function for the result of 5 scores and 3 misses.
+// 
+// Martin C
+function checkGuess (text: string) {
+    match = 0
+    for (let guess = 0; guess <= picnicList.length - 1; guess++) {
+        let list: string[] = []
+        if (list[guess] == text) {
+            match = 2
+        }
+    }
+    if (match == 1) {
+        music.baDing.play()
+        info.changeScoreBy(1)
+        game.splash("your current score is " + info.score())
+    } else {
+        music.bigCrash.play()
+        misses += 1
+        game.splash("that's " + misses + " misses!")
+    }
+    checkMisses()
+    checkScore()
+}
+// This function ends the game in a loss when the user totals 3 misses
+// 
+// Martin C
+function checkMisses () {
+    if (misses == 3) {
+        game.over(false)
+    }
+}
+// On start, everything happens. The scene is set, the food is splashed on the screen, and then the user input section will pop up and let the user submit a guess
+// 
+// Martin C
+let match = 0
+let misses = 0
+let picnicList: string[] = []
 scene.setBackgroundImage(img`
     3333111333333333333111113333333333333331111133333333333311111333333333333333111113333333333333311111333333333333333333111113333333333333311111333333333333333333
     3333111333333333333111113333333333333331111133333333333311111333333333333333111113333333333333311111333333333333333333111113333333333333311111333333333333333333
@@ -280,16 +325,24 @@ img`
     ................................
     `
 ]
-let picnicList = [
+picnicList = [
 "donut",
 "lemon",
 "strawberry",
 "burger",
 "taco"
 ]
-for (let index = 0; index <= 5; index++) {
+game.splash("Remember the items!")
+for (let index = 0; index <= 4; index++) {
     picnicFood.setImage(foodList[index])
-    pause(1000)
+    picnicFood.setPosition(randint(0, scene.screenWidth()), randint(0, scene.screenHeight()))
+    pause(500)
 }
 picnicFood.destroy()
 let guess = game.askForString("What was one item in Yogi's basket?")
+info.setScore(0)
+misses = 0
+while (info.score() < 5 || misses < 3) {
+    guess = game.askForString("what's in Yogi's basket?")
+    checkGuess(guess)
+}
